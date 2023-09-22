@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
 import { Footer } from './footer';
@@ -55,7 +55,7 @@ export const Login = () => {
                     <Form.Item shouldUpdate>
                         {() => (
                             <Button
-                                onClick={() => {if (form.isFieldsTouched()) {navigate('/home')} }}
+                                onClick={() => { if (form.isFieldsTouched()) { navigate('/home') } }}
                                 type="primary"
                                 htmlType="submit"
                                 className={` my-[2%]  ${clientReady
@@ -75,7 +75,9 @@ export const Login = () => {
                     </Form.Item>
                 </Form>
             </main>
-            <Footer />
+            <div className=' w-full absolute bottom-0'>
+                <Footer />
+            </div>
         </div>
     );
 };

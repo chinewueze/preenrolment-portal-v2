@@ -15,8 +15,8 @@ export const Portal = () => {
     return (
         <div className="w-screen">
             <Header />
-            <main >
-                <section className="sm:mt-[15%] lg:mt-[5%]">
+            <main className="" >
+                <section className="sm:mt-[15%] lg:mt-[5%] mb-[9%]">
                     <div className='w-3/5 p-[1%] mx-auto'>
                         <Link to="/home">
                             <Title level={4}><LeftOutlined />Back </Title>
@@ -166,7 +166,9 @@ export const Portal = () => {
                     </div>
                 </section>
             </main>
-            <Footer />
+            <div className=' w-full lg:absolute bottom-0'>
+                <Footer />
+            </div>
         </div>
     )
 }
