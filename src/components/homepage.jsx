@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'
+import {useNavigate } from 'react-router-dom'
 import { Header } from "./header"
 import { Footer } from "./footer"
 import { Button } from 'antd';
@@ -8,21 +8,23 @@ import { Button } from 'antd';
 import { Typography } from 'antd';
 const { Title } = Typography;
 export const Home = () => {
-    const [loadings, setLoadings] = useState([]);
-    const enterLoading = (index) => {
-        setLoadings((prevLoadings) => {
-            const newLoadings = [...prevLoadings];
-            newLoadings[index] = true;
-            return newLoadings;
-        });
-        setTimeout(() => {
-            setLoadings((prevLoadings) => {
-                const newLoadings = [...prevLoadings];
-                newLoadings[index] = false;
-                return newLoadings;
-            });
-        }, 6000);
-    };
+    const navigate = useNavigate()
+    // const [loadings, setLoadings] = useState([]);
+    // const enterLoading = (index) => {
+    //     setLoadings((prevLoadings) => {
+    //         const newLoadings = [...prevLoadings];
+    //         newLoadings[index] = true;
+    //         return newLoadings;
+    //     });
+    //    ;
+    //     setTimeout(() => {
+    //         setLoadings((prevLoadings) => {
+    //             const newLoadings = [...prevLoadings];
+    //             newLoadings[index] = false;
+    //             return newLoadings;
+    //         });
+    //     }, 6000);
+    // };
     return (
         <div className="w-screen h-screen">
             <Header />
@@ -40,7 +42,7 @@ export const Home = () => {
                         Click the button below and proceed to upload Nominal Roll..
                     </Title>
                     <div className="w-fit mx-auto">
-                         <Button className='h-11  bg-green-500 text-lg' type="primary" loading={loadings[0]} onClick={() => enterLoading(0)}>
+                         <Button className='h-11  bg-green-500 text-lg' type="primary" onClick={() =>  navigate('/portal')}>
                                     GET STARTED
                         </Button>
                      </div> 
