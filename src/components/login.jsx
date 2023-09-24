@@ -3,17 +3,16 @@ import { useNavigate } from 'react-router-dom'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
 import { Footer } from './footer';
-export const Login = () => {
+export const Login = ({ login }) => {
+    const [details, setDetails] = useState({ email: "", password: "" });
     const navigate = useNavigate()
     const [form] = Form.useForm();
     const [clientReady, setClientReady] = useState(false);
-
-    // To disable submit button at the beginning.
     useEffect(() => {
         setClientReady(true);
     }, []);
     const onFinish = (values) => {
-        console.log('Finish:', values);
+        login(details);
     };
     return (
         <div className='relative w-screen h-screen'>
@@ -23,10 +22,11 @@ export const Login = () => {
             <main className=' pt-[4%]'>
                 <h1 className='text-center font-bold text-3xl'> SIGN IN </h1>
                 <Form
-                    className=' bg-stone-100 rounded-lg w-fit mx-auto my-[3%] p-[2%] shadow-lg'
+                    className=' bg-stone-100 rounded-lg lg:w-fit mx-auto my-[3%] p-[2%] shadow-lg'
                     form={form} name="horizontal_login" layout="block" onFinish={onFinish}>
                     <Form.Item
                         name="email"
+                        id="email"
                         rules={[
                             {
                                 required: true,
@@ -40,6 +40,7 @@ export const Login = () => {
                     </Form.Item>
                     <Form.Item
                         name="password"
+                        id="password"
                         rules={[
                             {
                                 required: true,
@@ -55,7 +56,6 @@ export const Login = () => {
                     <Form.Item shouldUpdate>
                         {() => (
                             <Button
-                                onClick={() => { if (form.isFieldsTouched()) { navigate('/home') } }}
                                 type="primary"
                                 htmlType="submit"
                                 className={` my-[2%]  ${clientReady
@@ -75,9 +75,7 @@ export const Login = () => {
                     </Form.Item>
                 </Form>
             </main>
-            <div className=' w-full absolute bottom-0'>
-                <Footer />
-            </div>
+            <Footer />
         </div>
     );
 };
