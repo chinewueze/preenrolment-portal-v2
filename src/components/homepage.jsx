@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'
-import { Header } from "./header"
-import { Footer } from "./footer"
 import { Button } from 'antd';
 import { Typography } from 'antd';
 const { Title } = Typography;
 export const Home = () => {
+
     const navigate = useNavigate()
     return (
-        <div className="w-screen h-screen">
-            <Header />
-            <main className='w-full h-[83%] bg-green-200 p-5'>
+        <div className="w-screen ">
+            <main className='w-full h-[83vh] bg-green-200 p-5'>
                 <div className="w-2/5 mx-auto">
                     <div className="w-fit mx-auto">
                         <img src="assets/upload.png" />
@@ -30,7 +28,6 @@ export const Home = () => {
                 </div>
             </main>
             <div className=' w-full lg:absolute bottom-0'>
-                <Footer />
             </div>
         </div>
     )

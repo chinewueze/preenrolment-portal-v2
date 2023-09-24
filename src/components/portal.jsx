@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom"
 import { UploadOutlined, LeftOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Typography, Upload } from 'antd';
-import { Header } from "./header"
-import { Footer } from "./footer"
+// import { Header } from "./header"
+// import { Footer } from "./footer"
 
 
 const { Title } = Typography;
@@ -14,11 +14,11 @@ export const Portal = () => {
 
     return (
         <div className="w-screen">
-            <Header />
+            {/* <Header /> */}
             <main className="" >
                 <section className="sm:mt-[15%] lg:mt-[5%] mb-[9%]">
                     <div className='w-3/5 p-[1%] mx-auto'>
-                        <Link to="/home">
+                        <Link to="/">
                             <Title level={4}><LeftOutlined />Back </Title>
                         </Link>
                     </div>
@@ -166,9 +166,7 @@ export const Portal = () => {
                     </div>
                 </section>
             </main>
-            <div className=' w-full lg:absolute bottom-0'>
-                <Footer />
-            </div>
+            {/* <Footer /> */}
         </div>
     )
 }
