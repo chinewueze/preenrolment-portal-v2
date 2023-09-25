@@ -1,28 +1,147 @@
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from "react-router-dom"
+import Axios from "axios";
 import { UploadOutlined, LeftOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Typography, Upload } from 'antd';
-// import { Header } from "./header"
-// import { Footer } from "./footer"
-
 
 const { Title } = Typography;
 const { Option } = Select;
-const onFinish = (values) => {
-    console.log('Received values of form: ', values);
-};
+
 export const Portal = () => {
 
+    const [category, setCategory] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [subCategory, setSubCategory] = useState([]);
+    const [selectedSubCategory, setSelectedSubCategory] = useState("");
+    const [subCategoryItem, setSubCategoryItem] = useState([]);
+    const [selectedItem, setSelectedItem] = useState("");
+    const [hmo, setHmo] = useState([]);
+    const [selectedHmo, setSelectedHmo] = useState("");
+    const [file, setFile] = useState(null);
+
+    const baseURL = import.meta.env.VITE_BASE_URL;
+
+    const getCategory = useCallback(async () => {
+        try {
+            const fetchCategory = await Axios.post(`${baseURL}/sectors`);
+            const item = fetchCategory.data.data;
+            setCategory(item);
+        } catch (err) {
+            console.log(err);
+        }
+    }, []);
+
+    const handleSubCategory = useCallback(async (e) => {
+        const curr = e.target.value;
+        setSelectedCategory(curr);
+        try {
+            const fetch = await Axios.post(`${baseURL}/category/${curr}`);
+            const result = fetch.data.data;
+            setSubCategory(result);
+        } catch (err) {
+            console.log(err);
+        }
+    }, []);
+
+    const handleSubCategoryItem = useCallback(
+        async (e) => {
+            const impt = e.target.value;
+            setSelectedSubCategory(impt);
+            try {
+                const fetchItem = await Axios.post(
+                    `${baseURL}/${selectedCategory}/${impt}`,
+                );
+                const subItem = fetchItem.data.data;
+                setSubCategoryItem(subItem);
+            } catch (err) {
+                console.log(err);
+            }
+        },
+        [selectedCategory],
+    );
+
+    const getHmo = useCallback(async () => {
+        try {
+            const fetchHmo = await Axios.post(`${baseURL}/hmo`);
+            const resultHmo = fetchHmo.data.data;
+            setHmo(resultHmo);
+        } catch (err) {
+            console.log(err);
+        }
+    }, []);
+
+    useEffect(() => {
+        getCategory();
+    }, [getCategory]);
+
+    useEffect(() => {
+        getHmo();
+    }, [getHmo]);
+
+    const handleHmo = (e) => {
+        setSelectedHmo(e.target.value);
+    };
+
+    const onFinish = (values) => {
+        const myHmo = JSON.parse(selectedHmo);
+        const mySelectedItem = JSON.parse(selectedItem);
+
+        let enrollData = new FormData();
+
+        enrollData.append("email", sessionStorage.getItem("email_user"));
+        enrollData.append("file", file);
+        enrollData.append("hmo_id", myHmo?.id);
+        enrollData.append("subcategory", selectedSubCategory);
+        enrollData.append("category", selectedCategory);
+        enrollData.append("hmo_name", myHmo?.name);
+        enrollData.append("subcategoryitemname", mySelectedItem.name);
+        enrollData.append("subcategoryitemid", mySelectedItem.id);
+
+        Axios({
+            method: "POST",
+            url: `${baseURL}/file/upload`,
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+            data: enrollData,
+        })
+            .then((response) => {
+                console.log(response);
+                toast.success("👍 Form Submitted Successfully!", {
+                    position: toast.POSITION.TOP_CENTER,
+                    autoClose: 8000,
+                    hideProgressBar: false,
+                    delay: 3000,
+                });
+                setSelectedCategory("");
+                setSelectedSubCategory("");
+                setSelectedItem("");
+                setSelectedHmo("");
+            })
+            .catch(function (error) {
+                console.log(error);
+                setButtonText("Upload");
+                setSelectedCategory("");
+                setSelectedSubCategory("");
+                setSelectedItem("");
+                setSelectedHmo("");
+                toast.error("🤷‍♂️ Form submit error. Refresh or Try again later!", {
+                    position: toast.POSITION.TOP_CENTER,
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                });
+            });
+    };
     return (
         <div className="w-screen">
-            {/* <Header /> */}
-            <main className="" >
-                <section className="sm:mt-[15%] lg:mt-[5%] mb-[9%]">
+            <div>
+                <section className="sm:mt-[10%] lg:mt-[5%] ">
                     <div className='w-3/5 p-[1%] mx-auto'>
                         <Link to="/">
                             <Title level={4}><LeftOutlined />Back </Title>
                         </Link>
                     </div>
-                    <div className='w-3/5  mx-auto shadow-xl bg-stone-100 rounded-lg sm:p-5'>
+                    <div className='w-3/5 mx-auto shadow-xl bg-stone-100  rounded-lg sm:p-5'>
                         <Form
                             name="complex-form"
                             onFinish={onFinish}
@@ -32,6 +151,8 @@ export const Portal = () => {
                                     <Form.Item
                                         className='lg:w-3/12'
                                         name="category"
+                                        value={selectedCategory}
+                                        onChange={handleSubCategory}
                                         rules={[
                                             {
                                                 required: true,
@@ -40,14 +161,18 @@ export const Portal = () => {
                                         ]}
                                     >
                                         <Select placeholder="Select Category">
-                                            <Option value="Formal">Formal </Option>
-                                            <Option value="Informal"> Informal </Option>
-                                            <Option value="Equity"> Equity </Option>
+                                            {category?.map((val, id) => (
+                                                <Option key={`${val}-${id}`} value={val}>
+                                                    {val}
+                                                </Option>
+                                            ))}
                                         </Select>
                                     </Form.Item>
                                     <Form.Item
                                         className='lg:w-3/12 '
                                         name="subcategory"
+                                        value={selectedSubCategory}
+                                        onChange={handleSubCategoryItem}
                                         rules={[
                                             {
                                                 required: true,
@@ -56,38 +181,21 @@ export const Portal = () => {
                                         ]}
                                     >
                                         <Select placeholder="Select Subcategory">
-                                            <Option value="Civil Service Commission"> Civil Service Commission </Option>
-                                            <Option value="Government House"> Government House </Option>
-                                            <Option value="Local Government Area">Local Government Area </Option>
-                                            <Option value="Ministry Of Agriculture And Natural Resources"> Ministry Of Agriculture And Natural Resources </Option>
-                                            <Option value="Ministry Of Budget And Economic Planning"> Ministry Of Budget And Economic Planning  </Option>
-                                            <Option value="Ministry Of Commerce And Industries">Ministry Of Commerce And Industries </Option>
-                                            <Option value="Ministry Of Education"> Ministry Of Education </Option>
-                                            <Option value="Ministry Of Environment"> Ministry Of Environment </Option>
-                                            <Option value="Ministry Of Health"> Ministry Of Health  </Option>
-                                            <Option value="Ministry Of Finance "> Ministry Of Finance  </Option>
-                                            <Option value="Ministry Of Information"> Ministry Of Information  </Option>
-                                            <Option value="Ministry Of Justice"> Ministry Of Justice  </Option>
-                                            <Option value="Ministry Of Lands And Survey "> Ministry Of Lands And Survey  </Option>
-                                            <Option value="Ministry Of Local Government And Chieftancy Affairs"> Ministry Of Local Government And Chieftancy Affairs </Option>
-                                            <Option value="Ministry Of Mineral Development"> Ministry Of Mineral Development  </Option>
-                                            <Option value="Ministry Of Physical Planning And Urban Development"> Ministry Of Physical Planning And Urban Development </Option>
-                                            <Option value="Ministry Of Science and Technology"> Ministry Of Science and Technology  </Option>
-                                            <Option value="Ministry Of Tourisn, Culture And Hospitality"> Ministry Of Tourisn, Culture And Hospitality  </Option>
-                                            <Option value="Ministry Of Transport"> Ministry Of Transport  </Option>
-                                            <Option value="Ministry Of Watter Resources And Rural Development"> Ministry Of Watter Resources And Rural Development  </Option>
-                                            <Option value="Ministry Of Women Affairs And Social Development"> Ministry Of Women Affairs And Social Development </Option>
-                                            <Option value="Ministry Of Works"> Ministry Of Works  </Option>
-                                            <Option value="Ministry Of Youth And Sports"> Ministry Of Youth And Sports </Option>
-                                            <Option value="Organized Private Sector (Neca)"> Organized Private Sector (Neca) </Option>
-                                            <Option value="Plaschema"> Plaschema </Option>
-                                            <Option value="Plateau State House Of Assembly Commission"> Plateau State House Of Assembly Commission </Option>
-                                            <Option value="Tertiary Institutions"> Tertiary Institutions </Option>
+                                            {subCategory?.map((options, name) => (
+                                                <Option key={`${options}-${name}`} value={options}>
+                                                    {options}
+                                                </Option>
+                                            ))}
                                         </Select>
                                     </Form.Item>
                                     <Form.Item
                                         className='lg:w-3/12'
                                         name="subcategoryitem"
+                                        disabled={
+                                            ["Plsef", "Bhcpf", "General"].includes(selectedSubCategory)
+                                        }
+                                        value={selectedItem}
+                                        onChange={(e) => setSelectedItem(e.target.value)}
                                         rules={[
                                             {
                                                 required: true,
@@ -96,13 +204,11 @@ export const Portal = () => {
                                         ]}
                                     >
                                         <Select placeholder="Select Subcategory item">
-                                            <Option value="St. Theresa Girl's College">St. Theresa Girl's College </Option>
-                                            <Option value="Organized Private Sector (Neca)"> Organized Private Sector (Neca) </Option>
-                                            <Option value="PT. Timah"> PT. Timah </Option>
-                                            <Option value="Mamko Nig Ltd"> Mamko Nig Ltd </Option>
-                                            <Option value="St Murumba College Jos"> St Murumba College Jos </Option>
-                                            <Option value="Beautiful Gate Foundation"> Beautiful Gate Foundation </Option>
-                                            <Option value="Plateau Private"> Plateau Private </Option>
+                                            {subCategoryItem?.map((opt, name) => (
+                                                <Option key={`${opt}-${name}`} value={JSON.stringify(opt)}>
+                                                    {opt.name}
+                                                </Option>
+                                            ))}
                                         </Select>
                                     </Form.Item>
                                 </div>
@@ -110,16 +216,17 @@ export const Portal = () => {
                                     <Form.Item label="User Email">
                                         <Form.Item
                                             className='sm:my-0'
-                                            name="email"
+                                            name="user_email"
+
                                         >
-                                            <Input
-                                                placeholder="user@email.com"
-                                            />
+                                            <Input readOnly defaultValue={sessionStorage.getItem("email_user")} />
                                         </Form.Item>
                                     </Form.Item>
                                     <Form.Item
                                         className='lg:w-3/12 '
                                         name="hmo"
+                                        value={selectedHmo}
+                                        onChange={handleHmo}
                                         rules={[
                                             {
                                                 required: true,
@@ -128,20 +235,17 @@ export const Portal = () => {
                                         ]}
                                     >
                                         <Select placeholder="Select HMO">
-                                            <Option value="Ashmed ">Ashmed </Option>
-                                            <Option value="Health spring"> Health spring </Option>
-                                            <Option value="Infinite X2"> Infinite X2 </Option>
-                                            <Option value="Lifeworth"> Lifeworth </Option>
-                                            <Option value=" Plaschema"> Plaschema </Option>
-                                            <Option value=" Pro Health"> Pro Health </Option>
-                                            <Option value="Regenix "> Regenix </Option>
-                                            <Option value="Salus Trust"> Salus Trust </Option>
-                                            <Option value="Well Health"> Well Health </Option>
+                                            {hmo?.map((res) => (
+                                                <Option value={JSON.stringify(res)} key={res.id}>
+                                                    {res.name}
+                                                </Option>
+                                            ))}
                                         </Select>
                                     </Form.Item>
                                     <Form.Item
                                         className='lg:w-3/12 '
                                         name="file"
+                                        onChange={(e) => setFile(e.target.files[0])}
                                         rules={[
                                             {
                                                 required: true,
@@ -165,8 +269,7 @@ export const Portal = () => {
                         </Form>
                     </div>
                 </section>
-            </main>
-            {/* <Footer /> */}
+            </div>
         </div>
     )
 }
