@@ -8,7 +8,7 @@ export const Home = () => {
     const navigate = useNavigate()
     return (
         <div className="w-screen ">
-            <main className='w-full h-[83vh] bg-green-200 p-5'>
+            <main className='w-full sm:h-[80vh] lg:h-[85vh] bg-green-200 p-5'>
                 <div className="w-2/5 mx-auto">
                     <div className="w-fit mx-auto">
                         <img src="assets/upload.png" />

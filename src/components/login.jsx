@@ -8,7 +8,7 @@ export const Login = ({ login }) => {
     const navigate = useNavigate()
     const [form] = Form.useForm();
     const [clientReady, setClientReady] = useState(false);
-
+    
     useEffect(() => {
         setClientReady(true);
     }, []);
