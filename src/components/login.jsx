@@ -12,7 +12,7 @@ export const Login = ({ login }) => {
     useEffect(() => {
         setClientReady(true);
     }, []);
-    const onFinish = (values) => {
+    const onFinish = (details) => {
         login(details);
     };
     return (
