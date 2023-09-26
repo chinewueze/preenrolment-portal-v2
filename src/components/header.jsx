@@ -22,11 +22,12 @@ export const Header = () => {
                 <h1 className=' sm:text-lg lg:text-2xl text-white  font-bold '> Plateau Health Pre-Enrollment Portal </h1>
             </div>
             <button
-                className=' rounded-lg text-blue-500 bg-white p-2 text-4xl self-center outline-none active:bg-red-400'
-                onClick = {handleClick}
+                className='rounded-lg text-red-500 bg-white p-2 text-4xl self-center outline-none active:bg-red-400 relative hover:after:bg-white hover:after:text-black hover:after:content-["Logout"] hover:after:absolute hover:after:top-1/2 hover:after:left-0 hover:after:transform-translate-[-50%,-50%] hover:after:p-2 hover:after:rounded-md hover:after:text-sm'
+                onClick={handleClick}
             >
-            <LogoutOutlined />
-        </button>
+                <LogoutOutlined />
+            </button>
+
         </header >
     )
 }
