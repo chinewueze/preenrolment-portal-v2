@@ -8,7 +8,7 @@ const { Title } = Typography;
 const { Option } = Select;
 
 export const Portal = () => {
-
+    const [form] = Form.useForm();
     const [category, setCategory] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [subCategory, setSubCategory] = useState([]);
@@ -145,6 +145,7 @@ export const Portal = () => {
                         <Form
                             name="complex-form"
                             onFinish={onFinish}
+                            form={form}
                         >
                             <Form.Item >
                                 <div className='lg:flex justify-around'>
@@ -212,7 +213,7 @@ export const Portal = () => {
                                         </Select>
                                     </Form.Item>
                                 </div>
-                                <div className='lg:flex lg:justify-around lg:my-[5%]'>
+                                <div className='lg:flex lg:justify-around lg:my-[5%] '>
                                     <Form.Item label="User Email">
                                         <Form.Item
                                             className='sm:my-0'
@@ -261,7 +262,15 @@ export const Portal = () => {
                             </Form.Item>
                             <div className='w-fit mx-auto m-1'>
                                 <Form.Item colon={false}>
-                                    <Button type="primary" htmlType="submit" className='bg-green-500 w-32 h-14 text-lg font-semibold rounded-lg'>
+                                    <Button
+                                        type="success"
+                                        htmlType="submit"
+                                        className={`w-32 h-14 text-lg font-semibold rounded-lg ${form.isFieldsTouched() && !form.getFieldsError().some((item) => item.errors.length > 0)
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-gray-300 text-gray-600'
+                                            }`}
+                                        disabled={form.isFieldsTouched() && form.getFieldsError().some((item) => item.errors.length > 0)}
+                                    >
                                         Upload
                                     </Button>
                                 </Form.Item>
