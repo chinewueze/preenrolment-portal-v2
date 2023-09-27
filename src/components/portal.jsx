@@ -8,7 +8,10 @@ const { Title } = Typography;
 const { Option } = Select;
 
 export const Portal = () => {
+
     const [form] = Form.useForm();
+
+
     const [category, setCategory] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [subCategory, setSubCategory] = useState([]);
@@ -31,22 +34,20 @@ export const Portal = () => {
         }
     }, []);
 
-    const handleSubCategory = useCallback(async (e) => {
-        const curr = e.target.value;
+    const handleSubCategory = useCallback(async (curr) => {
         setSelectedCategory(curr);
         try {
             const fetch = await Axios.post(`${baseURL}/category/${curr}`);
             const result = fetch.data.data;
             setSubCategory(result);
+            console.log("Result:", result)
         } catch (err) {
             console.log(err);
         }
     }, []);
 
     const handleSubCategoryItem = useCallback(
-        async (e) => {
-            const impt = e.target.value;
-            setSelectedSubCategory(impt);
+        async (impt) => {
             try {
                 const fetchItem = await Axios.post(
                     `${baseURL}/${selectedCategory}/${impt}`,
@@ -82,7 +83,15 @@ export const Portal = () => {
         setSelectedHmo(e.target.value);
     };
 
-    const onFinish = (values) => {
+    const handleFileChange = (info) => {
+        if (info.fileList.length > 0) {
+            setFile(info.file);
+        } else {
+            setFile(null);
+        }
+    };
+
+    const onFinish = () => {
         const myHmo = JSON.parse(selectedHmo);
         const mySelectedItem = JSON.parse(selectedItem);
 
@@ -120,7 +129,6 @@ export const Portal = () => {
             })
             .catch(function (error) {
                 console.log(error);
-                setButtonText("Upload");
                 setSelectedCategory("");
                 setSelectedSubCategory("");
                 setSelectedItem("");
@@ -152,8 +160,7 @@ export const Portal = () => {
                                     <Form.Item
                                         className='lg:w-3/12'
                                         name="category"
-                                        value={selectedCategory}
-                                        onChange={handleSubCategory}
+
                                         rules={[
                                             {
                                                 required: true,
@@ -161,7 +168,10 @@ export const Portal = () => {
                                             },
                                         ]}
                                     >
-                                        <Select placeholder="Select Category">
+                                        <Select
+                                            value={selectedCategory}
+                                            onChange={(value) => handleSubCategory(value)}
+                                            placeholder="Select Category">
                                             {category?.map((val, id) => (
                                                 <Option key={`${val}-${id}`} value={val}>
                                                     {val}
@@ -172,8 +182,6 @@ export const Portal = () => {
                                     <Form.Item
                                         className='lg:w-3/12 '
                                         name="subcategory"
-                                        value={selectedSubCategory}
-                                        onChange={handleSubCategoryItem}
                                         rules={[
                                             {
                                                 required: true,
@@ -181,7 +189,11 @@ export const Portal = () => {
                                             },
                                         ]}
                                     >
-                                        <Select placeholder="Select Subcategory">
+                                        <Select
+                                            value={selectedSubCategory}
+                                            onChange={(value) => handleSubCategoryItem(value)}
+                                            placeholder="Select Subcategory"
+                                        >
                                             {subCategory?.map((options, name) => (
                                                 <Option key={`${options}-${name}`} value={options}>
                                                     {options}
@@ -244,17 +256,28 @@ export const Portal = () => {
                                         </Select>
                                     </Form.Item>
                                     <Form.Item
-                                        className='lg:w-3/12 '
+                                        className="lg:w-3/12"
                                         name="file"
-                                        onChange={(e) => setFile(e.target.files[0])}
                                         rules={[
                                             {
                                                 required: true,
-                                                message: 'Please uppload a file!',
+                                                message: 'Please upload a file!',
+                                                validator: (_, value) => {
+                                                    if (file) {
+                                                        return Promise.resolve();
+                                                    }
+                                                    return Promise.reject('Please upload a file!');
+                                                },
                                             },
                                         ]}
                                     >
-                                        <Upload name="logo" action="/upload.do" listType="picture">
+                                        <Upload
+                                            name="logo"
+                                            action={`${baseURL}/file/upload`}
+                                            listType="picture"
+                                            fileList={file ? [file] : []}
+                                            onChange={handleFileChange}
+                                        >
                                             <Button icon={<UploadOutlined />}>Click to upload</Button>
                                         </Upload>
                                     </Form.Item>
@@ -265,11 +288,23 @@ export const Portal = () => {
                                     <Button
                                         type="success"
                                         htmlType="submit"
-                                        className={`w-32 h-14 text-lg font-semibold rounded-lg ${form.isFieldsTouched() && !form.getFieldsError().some((item) => item.errors.length > 0)
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-gray-300 text-gray-600'
+                                        className={`w-32 h-14 text-lg font-semibold rounded-lg ${!form.isFieldTouched('category') ||
+                                            !form.isFieldTouched('subcategory') ||
+                                            !form.isFieldTouched('subcategoryitem') ||
+                                            !form.isFieldTouched('hmo') ||
+                                            !file || 
+                                            form.getFieldsError().some(({ errors }) => errors.length > 0)
+                                            ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                            : 'bg-green-500 text-white'
                                             }`}
-                                        disabled={form.isFieldsTouched() && form.getFieldsError().some((item) => item.errors.length > 0)}
+                                        disabled={
+                                            !form.isFieldTouched('category') ||
+                                            !form.isFieldTouched('subcategory') ||
+                                            !form.isFieldTouched('subcategoryitem') ||
+                                            !form.isFieldTouched('hmo') ||
+                                            !file || 
+                                            form.getFieldsError().some(({ errors }) => errors.length > 0)
+                                        }
                                     >
                                         Upload
                                     </Button>

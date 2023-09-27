@@ -19,7 +19,7 @@ export const Header = () => {
                 <img src="assets/plashema-logo.jpg" className=" h-[9vh] w-[185px] rounded-2xl delay-150 duration-700 ease-in-out hover:scale-110" />
             </div>
             <div className=' w-[75%] mt-2  ml-[5%] mr-[10%] text-center'>
-                <h1 className=' sm:text-lg lg:text-2xl text-white  font-bold '> Plateau Health Pre-Enrollment Portal </h1>
+                <h1 className=' sm:text-lg lg:text-4xl text-white  font-bold '> Plateau Health Pre-Enrollment Portal </h1>
             </div>
             <button
                 className='rounded-lg text-red-500 bg-white p-2 text-4xl self-center outline-none active:bg-red-400 relative hover:after:bg-white hover:after:text-black hover:after:content-["Logout"] hover:after:absolute hover:after:top-1/2 hover:after:left-0 hover:after:transform-translate-[-50%,-50%] hover:after:p-2 hover:after:rounded-md hover:after:text-sm'
