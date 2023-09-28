@@ -14,7 +14,7 @@ export const Header = () => {
     }
 
     return (
-        <header className="w-full flex  h-[13vh] bg-green-500 p-4 ">
+        <header className="w-full flex  h-[15vh] bg-green-500 p-4 ">
             <div className=" ml-[1%] ">
                 <img src="assets/plashema-logo.jpg" className=" h-[9vh] w-[185px] rounded-2xl delay-150 duration-700 ease-in-out hover:scale-110" />
             </div>

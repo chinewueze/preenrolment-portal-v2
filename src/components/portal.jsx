@@ -141,15 +141,15 @@ export const Portal = () => {
             });
     };
     return (
-        <div className="w-screen">
-            <div>
-                <section className="sm:mt-[10%] lg:mt-[5%] ">
+        <div>
+            <div> 
+                <section className="sm:mt-[7%] lg:mt-[5%]">
                     <div className='w-3/5 p-[1%] mx-auto'>
                         <Link to="/">
                             <Title level={4}><LeftOutlined />Back </Title>
                         </Link>
                     </div>
-                    <div className='w-3/5 mx-auto shadow-xl bg-stone-100  rounded-lg sm:p-5'>
+                    <div className='w-3/5 mx-auto shadow-xl bg-stone-100 sm:mb-[2%] rounded-lg sm:p-4 sm:h-[55vh] lg:h-fit sm:overflow-scroll lg:overflow-hidden'>
                         <Form
                             name="complex-form"
                             onFinish={onFinish}

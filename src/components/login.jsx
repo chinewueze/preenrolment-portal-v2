@@ -16,7 +16,7 @@ export const Login = ({ login }) => {
         login(details);
     };
     return (
-        <div className='relative w-screen h-screen bg-stone-100'>
+        <div className='relative w-screen h-screen bg-stone-100 '>
             <header className="p-3 ">
                 <img src="assets/plaschema-logo.png" className='ml-[3%]' />
             </header>
@@ -76,7 +76,9 @@ export const Login = ({ login }) => {
                     </Form.Item>
                 </Form>
             </main>
-            <Footer />
+            <footer className='sm:absolute sm:bottom-[8%] lg:bottom-0'>
+                <Footer />
+            </footer>
         </div>
     );
 };
