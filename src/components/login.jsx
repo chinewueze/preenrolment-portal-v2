@@ -16,14 +16,14 @@ export const Login = ({ login }) => {
         login(details);
     };
     return (
-        <div className='relative w-screen h-screen'>
+        <div className='relative w-screen h-screen bg-stone-100'>
             <header className="p-3 ">
                 <img src="assets/plaschema-logo.png" className='ml-[3%]' />
             </header>
             <main className=' pt-[4%]'>
                 <h1 className='text-center font-bold text-3xl'> SIGN IN </h1>
                 <Form
-                    className=' bg-stone-100 rounded-lg lg:w-fit mx-auto my-[3%] p-[2%] shadow-lg'
+                    className='bg-white  rounded-lg lg:w-fit mx-auto my-[3%] p-[2%] shadow-lg'
                     form={form} name="horizontal_login" layout="block" onFinish={onFinish}>
                     <Form.Item
                         name="email"
