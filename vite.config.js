@@ -8,4 +8,7 @@ export default defineConfig({
     jsxFactory: 'React.createElement',
     jsxFragment: 'React.Fragment',
   },
+  build: {
+    outDir: 'dist', 
+  },
 })
