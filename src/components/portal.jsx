@@ -2,11 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from "react-router-dom"
 import Axios from "axios";
 import { UploadOutlined, LeftOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, Typography, Upload } from 'antd';
+import { Button, Form, Input, Select, Typography, Upload, message } from 'antd';
 
 const { Title } = Typography;
 const { Option } = Select;
 
+function validateFile(file) {
+    const acceptedExtensions = ['.csv', '.xls', '.xlsx'];
+    const fileExtension = file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2);
+    return acceptedExtensions.includes(`.${fileExtension}`);
+}
 export const Portal = () => {
 
     const [form] = Form.useForm();
@@ -85,7 +90,12 @@ export const Portal = () => {
 
     const handleFileChange = (info) => {
         if (info.fileList.length > 0) {
-            setFile(info.file);
+            const selectedFile = info.file;
+            if (validateFile(selectedFile)) {
+                setFile(selectedFile);
+            } else {
+                message.error('File must be in CSV, XLS, or XLSX format');
+            }
         } else {
             setFile(null);
         }
@@ -142,7 +152,7 @@ export const Portal = () => {
     };
     return (
         <div>
-            <div> 
+            <div>
                 <section className="sm:mt-[7%] lg:mt-[5%]">
                     <div className='w-3/5 p-[1%] mx-auto'>
                         <Link to="/">
@@ -204,9 +214,7 @@ export const Portal = () => {
                                     <Form.Item
                                         className='lg:w-3/12'
                                         name="subcategoryitem"
-                                        disabled={
-                                            ["Plsef", "Bhcpf", "General"].includes(selectedSubCategory)
-                                        }
+
                                         value={selectedItem}
                                         onChange={(e) => setSelectedItem(e.target.value)}
                                         rules={[
@@ -216,7 +224,14 @@ export const Portal = () => {
                                             },
                                         ]}
                                     >
-                                        <Select placeholder="Select Subcategory item">
+                                        <Select
+                                            disabled={
+                                                selectedSubCategory === "Plsef" ||
+                                                selectedSubCategory === "Bhcpf" ||
+                                                selectedSubCategory === "General"
+                                            }
+                                            placeholder="Select Subcategory item"
+                                        >
                                             {subCategoryItem?.map((opt, name) => (
                                                 <Option key={`${opt}-${name}`} value={JSON.stringify(opt)}>
                                                     {opt.name}
@@ -273,9 +288,15 @@ export const Portal = () => {
                                     >
                                         <Upload
                                             name="logo"
+                                            accept=".csv, .xls, .xlsx"
                                             action={`${baseURL}/file/upload`}
                                             listType="picture"
                                             fileList={file ? [file] : []}
+                                            beforeUpload={(file) => {
+                                                if (validateFile(file)) {
+                                                    return false;
+                                                }
+                                            }}
                                             onChange={handleFileChange}
                                         >
                                             <Button icon={<UploadOutlined />}>Click to upload</Button>
@@ -292,7 +313,7 @@ export const Portal = () => {
                                             !form.isFieldTouched('subcategory') ||
                                             !form.isFieldTouched('subcategoryitem') ||
                                             !form.isFieldTouched('hmo') ||
-                                            !file || 
+                                            !file ||
                                             form.getFieldsError().some(({ errors }) => errors.length > 0)
                                             ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
                                             : 'bg-green-500 text-white'
@@ -302,7 +323,7 @@ export const Portal = () => {
                                             !form.isFieldTouched('subcategory') ||
                                             !form.isFieldTouched('subcategoryitem') ||
                                             !form.isFieldTouched('hmo') ||
-                                            !file || 
+                                            !file ||
                                             form.getFieldsError().some(({ errors }) => errors.length > 0)
                                         }
                                     >
