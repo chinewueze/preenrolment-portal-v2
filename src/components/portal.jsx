@@ -27,6 +27,21 @@ export const Portal = () => {
     const [selectedHmo, setSelectedHmo] = useState("");
     const [file, setFile] = useState(null);
 
+    const shouldDisableSubcategoryItemSelect = () => {
+        return (
+            selectedSubCategory === "Plsef" ||
+            selectedSubCategory === "Bhcpf" ||
+            selectedSubCategory === "General"
+        );
+    };
+    useEffect(() => {
+        const isDisabled = shouldDisableSubcategoryItemSelect();
+        form.setFieldsValue({ subcategoryitem: null }); // Reset the selected subcategory item whenever the disabled state changes
+        form.setFields([{ name: 'subcategoryitem', value: null, disabled: isDisabled }]); // Update the disabled state of the subcategory item select input
+    }, [selectedSubCategory]);
+
+
+
     const baseURL = import.meta.env.VITE_BASE_URL;
 
     const getCategory = useCallback(async () => {
@@ -212,9 +227,8 @@ export const Portal = () => {
                                         </Select>
                                     </Form.Item>
                                     <Form.Item
-                                        className='lg:w-3/12'
+                                        className="lg:w-3/12"
                                         name="subcategoryitem"
-
                                         value={selectedItem}
                                         onChange={(e) => setSelectedItem(e.target.value)}
                                         rules={[
@@ -225,11 +239,7 @@ export const Portal = () => {
                                         ]}
                                     >
                                         <Select
-                                            disabled={
-                                                selectedSubCategory === "Plsef" ||
-                                                selectedSubCategory === "Bhcpf" ||
-                                                selectedSubCategory === "General"
-                                            }
+                                            disabled={shouldDisableSubcategoryItemSelect()}
                                             placeholder="Select Subcategory item"
                                         >
                                             {subCategoryItem?.map((opt, name) => (
