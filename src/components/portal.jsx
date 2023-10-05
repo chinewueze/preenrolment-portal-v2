@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from "react-router-dom"
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Axios from "axios";
 import { UploadOutlined, LeftOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Typography, Upload, message } from 'antd';
+import { api } from '../utils/mkReq';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -16,7 +19,6 @@ export const Portal = () => {
 
     const [form] = Form.useForm();
 
-
     const [category, setCategory] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [subCategory, setSubCategory] = useState([]);
@@ -26,27 +28,26 @@ export const Portal = () => {
     const [hmo, setHmo] = useState([]);
     const [selectedHmo, setSelectedHmo] = useState("");
     const [file, setFile] = useState(null);
-
-    const shouldDisableSubcategoryItemSelect = () => {
-        return (
-            selectedSubCategory === "Plsef" ||
-            selectedSubCategory === "Bhcpf" ||
-            selectedSubCategory === "General"
-        );
-    };
-    useEffect(() => {
-        const isDisabled = shouldDisableSubcategoryItemSelect();
-        form.setFieldsValue({ subcategoryitem: null }); // Reset the selected subcategory item whenever the disabled state changes
-        form.setFields([{ name: 'subcategoryitem', value: null, disabled: isDisabled }]); // Update the disabled state of the subcategory item select input
-    }, [selectedSubCategory]);
+    const [disableSubCategoryItemFetch, setDisableSubCategoryItemFetch] = useState(false);
+    // const [isDisabled, setIsDisabled] = useState(false)
 
 
-
-    const baseURL = import.meta.env.VITE_BASE_URL;
+    //*******************************************************DISABLED HANDLER */
+    // useEffect(() => {
+    //     if (
+    //         selectedSubCategory === "Plsef" ||
+    //         selectedSubCategory === "Bhcpf" ||
+    //         selectedSubCategory === "General"
+    //     ) {
+    //         setIsDisabled(true)
+    //     } else {
+    //         setIsDisabled(false)
+    //     }
+    // }, [selectedSubCategory]);
 
     const getCategory = useCallback(async () => {
         try {
-            const fetchCategory = await Axios.post(`${baseURL}/sectors`);
+            const fetchCategory = await Axios.post(`${api.baseURL}/sectors`);
             const item = fetchCategory.data.data;
             setCategory(item);
         } catch (err) {
@@ -57,33 +58,38 @@ export const Portal = () => {
     const handleSubCategory = useCallback(async (curr) => {
         setSelectedCategory(curr);
         try {
-            const fetch = await Axios.post(`${baseURL}/category/${curr}`);
+            const fetch = await Axios.post(`${api.baseURL}/category/${curr}`);
             const result = fetch.data.data;
             setSubCategory(result);
-            console.log("Result:", result)
         } catch (err) {
             console.log(err);
         }
     }, []);
 
-    const handleSubCategoryItem = useCallback(
-        async (impt) => {
-            try {
+
+    const handleSubCategoryItem = useCallback(async (impt) => {
+        try {
+            const trimmedSelectedSubCategory = selectedSubCategory.trim().toLowerCase();
+            const disabledSubCategories = ["plsef", "bhcpf", "general"];
+            const shouldFetchSubCategoryItems = !disabledSubCategories.includes(trimmedSelectedSubCategory);
+
+            if (shouldFetchSubCategoryItems) {
                 const fetchItem = await Axios.post(
-                    `${baseURL}/${selectedCategory}/${impt}`,
+                    `${api.baseURL}/${selectedCategory}/${impt}`,
                 );
                 const subItem = fetchItem.data.data;
                 setSubCategoryItem(subItem);
-            } catch (err) {
-                console.log(err);
             }
-        },
-        [selectedCategory],
-    );
+
+            setDisableSubCategoryItemFetch(!shouldFetchSubCategoryItems);
+        } catch (err) {
+            console.log(err);
+        }
+    }, [selectedCategory, selectedSubCategory]);
 
     const getHmo = useCallback(async () => {
         try {
-            const fetchHmo = await Axios.post(`${baseURL}/hmo`);
+            const fetchHmo = await Axios.post(`${api.baseURL}/hmo`);
             const resultHmo = fetchHmo.data.data;
             setHmo(resultHmo);
         } catch (err) {
@@ -133,7 +139,7 @@ export const Portal = () => {
 
         Axios({
             method: "POST",
-            url: `${baseURL}/file/upload`,
+            url: `${api.baseURL}/file/upload`,
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -227,10 +233,9 @@ export const Portal = () => {
                                         </Select>
                                     </Form.Item>
                                     <Form.Item
-                                        className="lg:w-3/12"
+                                        className='lg:w-3/12'
                                         name="subcategoryitem"
-                                        value={selectedItem}
-                                        onChange={(e) => setSelectedItem(e.target.value)}
+
                                         rules={[
                                             {
                                                 required: true,
@@ -239,7 +244,9 @@ export const Portal = () => {
                                         ]}
                                     >
                                         <Select
-                                            disabled={shouldDisableSubcategoryItemSelect()}
+                                            value={selectedItem}
+                                            onChange={(value) => setSelectedItem(value)}
+                                            disabled={disableSubCategoryItemFetch}
                                             placeholder="Select Subcategory item"
                                         >
                                             {subCategoryItem?.map((opt, name) => (
@@ -249,6 +256,9 @@ export const Portal = () => {
                                             ))}
                                         </Select>
                                     </Form.Item>
+
+
+
                                 </div>
                                 <div className='lg:flex lg:justify-around lg:my-[5%] '>
                                     <Form.Item label="User Email">
@@ -287,7 +297,7 @@ export const Portal = () => {
                                             {
                                                 required: true,
                                                 message: 'Please upload a file!',
-                                                validator: (_, value) => {
+                                                validator: () => {
                                                     if (file) {
                                                         return Promise.resolve();
                                                     }
@@ -299,7 +309,6 @@ export const Portal = () => {
                                         <Upload
                                             name="logo"
                                             accept=".csv, .xls, .xlsx"
-                                            action={`${baseURL}/file/upload`}
                                             listType="picture"
                                             fileList={file ? [file] : []}
                                             beforeUpload={(file) => {
