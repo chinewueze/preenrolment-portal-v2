@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { LogoutOutlined } from '@ant-design/icons';
 
-;
+
 
 export const Header = () => {
     const navigate = useNavigate()
