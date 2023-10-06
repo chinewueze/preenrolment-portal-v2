@@ -28,22 +28,6 @@ export const Portal = () => {
     const [hmo, setHmo] = useState([]);
     const [selectedHmo, setSelectedHmo] = useState("");
     const [file, setFile] = useState(null);
-    const [disableSubCategoryItemFetch, setDisableSubCategoryItemFetch] = useState(false);
-    // const [isDisabled, setIsDisabled] = useState(false)
-
-
-    //*******************************************************DISABLED HANDLER */
-    // useEffect(() => {
-    //     if (
-    //         selectedSubCategory === "Plsef" ||
-    //         selectedSubCategory === "Bhcpf" ||
-    //         selectedSubCategory === "General"
-    //     ) {
-    //         setIsDisabled(true)
-    //     } else {
-    //         setIsDisabled(false)
-    //     }
-    // }, [selectedSubCategory]);
 
     const getCategory = useCallback(async () => {
         try {
@@ -68,24 +52,18 @@ export const Portal = () => {
 
 
     const handleSubCategoryItem = useCallback(async (impt) => {
+        setSelectedSubCategory(impt);
         try {
-            const trimmedSelectedSubCategory = selectedSubCategory.trim().toLowerCase();
-            const disabledSubCategories = ["plsef", "bhcpf", "general"];
-            const shouldFetchSubCategoryItems = !disabledSubCategories.includes(trimmedSelectedSubCategory);
-
-            if (shouldFetchSubCategoryItems) {
-                const fetchItem = await Axios.post(
-                    `${api.baseURL}/${selectedCategory}/${impt}`,
-                );
-                const subItem = fetchItem.data.data;
-                setSubCategoryItem(subItem);
-            }
-
-            setDisableSubCategoryItemFetch(!shouldFetchSubCategoryItems);
+            const fetchItem = await Axios.post(
+                `${api.baseURL}/${selectedCategory}/${impt}`,
+            );
+            const subItem = fetchItem.data.data;
+            setSubCategoryItem(subItem);
         } catch (err) {
             console.log(err);
         }
-    }, [selectedCategory, selectedSubCategory]);
+    },
+        [selectedCategory, selectedSubCategory] );
 
     const getHmo = useCallback(async () => {
         try {
@@ -246,7 +224,11 @@ export const Portal = () => {
                                         <Select
                                             value={selectedItem}
                                             onChange={(value) => setSelectedItem(value)}
-                                            disabled={disableSubCategoryItemFetch}
+                                            disabled={
+                                                selectedSubCategory === 'Plsef' ||
+                                                selectedSubCategory === 'Bhcpf' ||
+                                                selectedSubCategory === 'General'
+                                            }
                                             placeholder="Select Subcategory item"
                                         >
                                             {subCategoryItem?.map((opt, name) => (
