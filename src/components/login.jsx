@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'
+import  { useEffect, useState } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
 import { Footer } from './footer';
 export const Login = ({ login }) => {
-    const [details, setDetails] = useState({ email: "", password: "" });
-    const navigate = useNavigate()
+    
     const [form] = Form.useForm();
     const [clientReady, setClientReady] = useState(false);
 
